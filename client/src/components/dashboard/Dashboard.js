@@ -3,7 +3,20 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
 
+import ClassSearch from "./ClassSearch"
+
 class Dashboard extends Component {
+  constructor() {
+      super()
+      this.state = {
+          search: ""
+      }
+  }
+
+  updateSearch(event) {
+    this.setState({search: event.target.value.substr(0, 20)})
+  }
+
   onLogoutClick = e => {
     e.preventDefault();
     this.props.logoutUser();
@@ -13,16 +26,27 @@ class Dashboard extends Component {
     const { user } = this.props.auth;
 
     return (
-      <div style={{ height: "75vh" }} className="container valign-wrapper">
-        <div className="row">
-          <div className="landing-copy col s12 center-align">
-            <h4>
+      <div className="container flex-no-shrink">
+        <input type="text"
+               value={this.state.search}
+               onChange={this.updateSearch.bind(this)}
+               placeholder="Search for a Course"
+               style={{width: "20%"}}
+               />
+
+        <div className="row flex-section">
+          <div className="landing-copy col s4 flex-col-scroll" style={{background: "#BBB"}} id="left">
+              <ClassSearch search={this.state.search} />
+          </div>
+
+          <div className="landing-copy col s4 center-align flex-col-scroll" id="middle">
+              <h1>Section selection</h1>
+          </div>
+
+          <div className="landing-copy col s4 center-align flex-col-scroll" id="right">
+            <h6>
               <b>Hey there,</b> {user.name.split(" ")[0]}
-              <p className="flow-text grey-text text-darken-1">
-                You are logged into a full-stack{" "}
-                <span style={{ fontFamily: "monospace" }}>MERN</span> app 👏
-              </p>
-            </h4>
+            </h6>
             <button
               style={{
                 width: "150px",
@@ -36,6 +60,7 @@ class Dashboard extends Component {
               Logout
             </button>
           </div>
+
         </div>
       </div>
     );
