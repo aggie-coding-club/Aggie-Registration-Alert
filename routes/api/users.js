@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
+const nodemailer = require('nodemailer')
 
 // Load input validation
 const validateRegisterInput = require("../../validation/register");
@@ -11,6 +12,48 @@ const validateLoginInput = require("../../validation/login");
 
 // Load User model
 const User = require("../../models/User");
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'xxx@gmail.com',
+      pass: 'xxx'
+    }
+});
+
+function sleep(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+}   
+
+
+async function run() {
+    while (true) {
+        const docs = await User.find()
+        for (let idx = 0; idx < docs.length; idx++) {
+            let mailOptions = {
+                from: 'aggieregalert@gmail.com',
+                to: docs[idx]['email'],
+                subject: 'Aggie Registration Alert',
+                text: 'This class is available!'
+            };
+
+            transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
+                console.log(error);
+                } else {
+                console.log('Email sent: ' + info.response);
+                }
+            });
+            // console.log(docs[idx]['email'])
+        }
+        // 30 minutes timeout currently
+        await sleep(1800000)
+    }
+}
+
+// run().catch(error => console.log(error.stack));
 
 // @route POST api/users/register
 // @desc Register user
