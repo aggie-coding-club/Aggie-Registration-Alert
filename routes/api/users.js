@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
 const nodemailer = require('nodemailer')
+const { spawn } = require("child_process")
 
 // Load input validation
 const validateRegisterInput = require("../../validation/register");
@@ -15,6 +16,7 @@ const User = require("../../models/User");
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
+    // change accordingly
     auth: {
       user: 'xxx@gmail.com',
       pass: 'xxx'
@@ -27,6 +29,7 @@ function sleep(ms) {
     });
 }   
 
+// calling the scraper for a class and section
 
 async function run() {
     while (true) {
@@ -36,24 +39,38 @@ async function run() {
                 from: 'aggieregalert@gmail.com',
                 to: docs[idx]['email'],
                 subject: 'Aggie Registration Alert',
-                text: 'This class is available!'
-            };
+                text: ''
+            }
 
-            transporter.sendMail(mailOptions, function(error, info){
-                if (error) {
-                console.log(error);
+            const department = "CSCE"
+            const course = "221"
+            const section = "201"
+            // calling the scraper for a class and section
+            // path should be based on where you run file, so we are running from server.js in this case
+            const pythonProcess = spawn('python3', ["scraper/scraper_email.py", department, course, section])
+            pythonProcess.stdout.on('data', (data) => {
+                data = parseInt(data.toString())
+                if (data > 0) {
+                    mailOptions["text"] = data + " seat(s) are available for " + department + " " + course + "-" + section
+                    transporter.sendMail(mailOptions, function(error, info){
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                        }
+                    })
                 } else {
-                console.log('Email sent: ' + info.response);
+                    mailOptions["text"] = "No seats are available for " + department + " " + course + "-" + section
                 }
-            });
-            // console.log(docs[idx]['email'])
+            })
+            // await sleep(15000)
         }
         // 30 minutes timeout currently
         await sleep(1800000)
     }
 }
 
-// run().catch(error => console.log(error.stack));
+run().catch(error => console.log(error.stack));
 
 // @route POST api/users/register
 // @desc Register user
