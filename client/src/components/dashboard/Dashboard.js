@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
 
+
 import ClassSearch from "./ClassSearch"
 
 class Dashboard extends Component {
@@ -35,7 +36,7 @@ class Dashboard extends Component {
                />
 
         <div className="row flex-section">
-          <div className="landing-copy col s4 flex-col-scroll" style={{background: "#BBB"}} id="left">
+          <div className="searchBar landing-copy col s4 flex-col-scroll" id="left">
               <ClassSearch search={this.state.search} />
           </div>
 
