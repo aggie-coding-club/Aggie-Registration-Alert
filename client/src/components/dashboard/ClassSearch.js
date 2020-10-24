@@ -1,4 +1,3 @@
-
 import React, { Component } from "react";
 import courses from "../../data/courses.json"
 // const courses = ["ACCT 121", "CSCE 121", "CSCE 221", "MATH 251"]
@@ -25,8 +24,8 @@ class ClassSearch extends Component {
         return (
             <div>
                 <ul>
-                    {filteredCourses.map((course) => {
-                        return <li>{course}</li>
+                    {filteredCourses.map((course, index) => {
+                        return <li key={index}>{course}</li>
                     })}
                 </ul>
             </div>

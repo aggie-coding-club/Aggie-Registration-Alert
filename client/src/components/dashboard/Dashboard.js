@@ -2,15 +2,22 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
+import axios from 'axios'
 
 import ClassSearch from "./ClassSearch"
+import CoursesList from "./CoursesList"
 
 class Dashboard extends Component {
   constructor() {
       super()
       this.state = {
-          search: ""
+          search: "",
+          courses: []
       }
+  }
+
+  componentDidMount = () => {
+    this.getCourses()
   }
 
   updateSearch(event) {
@@ -21,6 +28,30 @@ class Dashboard extends Component {
     e.preventDefault();
     this.props.logoutUser();
   };
+
+  getCourses = () => {
+    axios.get('/api/users/' + this.props.auth.user.id)
+    .then((response) => {
+        this.setState({ courses: response.data.courses })
+    })
+    .catch((error) => {
+        console.log(error)
+    })
+  }
+
+  deleteCourse = (course, index) => {
+      const courseObject = { "course": course }
+      axios.post('/api/users/remove/' + this.props.auth.user.id, courseObject)
+      .then((response) => {
+        let courses = this.state.courses.slice()
+        courses.splice(index, 1)
+        this.setState( {courses} )
+          console.log(response)
+      })
+      .catch(err => {
+          console.log(err)
+      })
+  }
 
   render() {
     const { user } = this.props.auth;
@@ -59,6 +90,9 @@ class Dashboard extends Component {
             >
               Logout
             </button>
+            <div>
+                <CoursesList courses={this.state.courses} deleteCourse={this.deleteCourse}/>
+            </div>
           </div>
 
         </div>
