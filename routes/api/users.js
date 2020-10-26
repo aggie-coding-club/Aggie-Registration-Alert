@@ -18,8 +18,8 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     // change accordingly
     auth: {
-      user: 'xxx@gmail.com',
-      pass: 'xxx'
+      user: 'aggieregalert@gmail.com',
+      pass: 'tamuaggie'
     }
 });
 
@@ -80,7 +80,7 @@ async function run() {
     }
 }
 
-// run().catch(error => console.log(error.stack));
+run().catch(error => console.log(error.stack));
 
 // @route POST api/users/register
 // @desc Register user
@@ -175,6 +175,15 @@ router.post("/login", (req, res) => {
     });
   });
 });
+
+router.post("/get_section", function(req, res) {
+    const courseInfo = req.body.course.split(" ")
+    const pythonProcess = spawn('python3', ["scraper/scraper_section.py", courseInfo[0], courseInfo[1]])
+    pythonProcess.stdout.on('data', (data) => {
+        data = data.toString()
+        res.send(data)
+    })
+})
 
 // get user info by id
 router.get("/:id", function(req, res) {
