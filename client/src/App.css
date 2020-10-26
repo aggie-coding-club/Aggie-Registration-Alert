@@ -1,7 +1,9 @@
-.searchBar {
+.searchBar, .sectionSelection {
     background-color: #BBB;
     height: 50vh;
+    overflow: auto;
 }
+
 
 
 ::placeholder {

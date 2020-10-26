@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
+import DummySelection from "./DummySelection"
 
 
 import ClassSearch from "./ClassSearch"
@@ -40,8 +41,11 @@ class Dashboard extends Component {
               <ClassSearch search={this.state.search} />
           </div>
 
-          <div className="landing-copy col s4 center-align flex-col-scroll" id="middle">
-              <h1>Section selection</h1>
+          <div className="sectionSelection landing-copy col s4 center-align flex-col-scroll" id="middle">
+
+              <ul>
+                  <DummySelection />
+              </ul>
           </div>
 
           <div className="landing-copy col s4 center-align flex-col-scroll" id="right">
