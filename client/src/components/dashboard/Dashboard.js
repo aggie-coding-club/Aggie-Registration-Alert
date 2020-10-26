@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
 import axios from 'axios'
 
+
 import ClassSearch from "./ClassSearch"
 import CoursesList from "./CoursesList"
 import SectionsList from "./SectionsList";
@@ -100,16 +101,16 @@ class Dashboard extends Component {
                />
 
         <div className="row flex-section">
-          <div className="landing-copy col s4 flex-col-scroll" style={{background: "#EEE", height: "75vh"}} id="left">
+          <div className="searchBar landing-copy col s4 flex-col-scroll" id="left">
               <ClassSearch getSections={this.getSections} search={this.state.search} />
           </div>
 
-          <div className="landing-copy col s4 center-align flex-col-scroll" style={{background: "#DDD", height: "75vh"}} id="middle">
+          <div className="sectionSelection landing-copy col s4 center-align flex-col-scroll" id="middle">
               <h4>Sections</h4>
               {this.state.loading ? <h5>Loading...</h5> : <SectionsList addCourse={this.addCourse} sections={this.state.sections}/>}
           </div>
 
-          <div className="landing-copy col s4 center-align flex-col-scroll" id="right">
+          <div className="sectionSelection landing-copy col s4 center-align flex-col-scroll" id="right">
             <h6>
               <b>Hey there,</b> {user.name.split(" ")[0]}
             </h6>
