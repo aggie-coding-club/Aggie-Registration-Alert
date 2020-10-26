@@ -110,7 +110,7 @@ class Dashboard extends Component {
               {this.state.loading ? <h5>Loading...</h5> : <SectionsList addCourse={this.addCourse} sections={this.state.sections}/>}
           </div>
 
-          <div className="landing-copy col s4 center-align flex-col-scroll" id="right">
+          <div className="sectionSelection landing-copy col s4 center-align flex-col-scroll" id="right">
             <h6>
               <b>Hey there,</b> {user.name.split(" ")[0]}
             </h6>
