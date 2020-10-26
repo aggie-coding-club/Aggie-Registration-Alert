@@ -32,7 +32,8 @@
 */
 
 .course {
-    font-size: 15pt;
+    font-size: 12pt;
+    text-align: center;
     color: #EEE;
     background: #500000;
     border-radius: 5px;

@@ -6,13 +6,16 @@ import axios from 'axios'
 
 import ClassSearch from "./ClassSearch"
 import CoursesList from "./CoursesList"
+import SectionsList from "./SectionsList";
 
 class Dashboard extends Component {
   constructor() {
       super()
       this.state = {
           search: "",
-          courses: []
+          courses: [],
+          sections: [],
+          loading: false
       }
   }
 
@@ -39,18 +42,49 @@ class Dashboard extends Component {
     })
   }
 
+  getSections = (course) => {
+    this.setState( {loading: true })
+    const courseObject = { "course": course }
+    axios.post('/api/users/get_section', courseObject)
+    .then((response) => {
+        //console.log(response.data)
+        let sections = response.data.replace(/'/g, '"')
+        let array_sections = JSON.parse("[" + sections + "]")
+        this.setState( {sections: array_sections, loading: false} )
+        console.log(this.state.sections)
+    })
+    .catch((error) => {
+        console.log(error)
+    })
+  }
+
+  addCourse = (course, index) => {
+    const courseObject = { "course": course }
+    console.log(courseObject)
+    axios.post('/api/users/add/' + this.props.auth.user.id, courseObject)
+    .then((response) => {
+        let courses = this.state.courses.slice()
+        courses.push(course)
+        this.setState( {courses} )
+        console.log(response)
+    })
+    .catch(err => {
+        console.log(err)
+    })
+  }
+
   deleteCourse = (course, index) => {
-      const courseObject = { "course": course }
-      axios.post('/api/users/remove/' + this.props.auth.user.id, courseObject)
-      .then((response) => {
+    const courseObject = { "course": course }
+    axios.post('/api/users/remove/' + this.props.auth.user.id, courseObject)
+    .then((response) => {
         let courses = this.state.courses.slice()
         courses.splice(index, 1)
         this.setState( {courses} )
-          console.log(response)
-      })
-      .catch(err => {
-          console.log(err)
-      })
+        console.log(response)
+    })
+    .catch(err => {
+        console.log(err)
+    })
   }
 
   render() {
@@ -66,12 +100,13 @@ class Dashboard extends Component {
                />
 
         <div className="row flex-section">
-          <div className="landing-copy col s4 flex-col-scroll" style={{background: "#BBB"}} id="left">
-              <ClassSearch search={this.state.search} />
+          <div className="landing-copy col s4 flex-col-scroll" style={{background: "#EEE", height: "75vh"}} id="left">
+              <ClassSearch getSections={this.getSections} search={this.state.search} />
           </div>
 
-          <div className="landing-copy col s4 center-align flex-col-scroll" id="middle">
-              <h1>Section selection</h1>
+          <div className="landing-copy col s4 center-align flex-col-scroll" style={{background: "#DDD", height: "75vh"}} id="middle">
+              <h4>Sections</h4>
+              {this.state.loading ? <h5>Loading...</h5> : <SectionsList addCourse={this.addCourse} sections={this.state.sections}/>}
           </div>
 
           <div className="landing-copy col s4 center-align flex-col-scroll" id="right">

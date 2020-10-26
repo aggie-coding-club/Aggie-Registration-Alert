@@ -14,6 +14,10 @@ class ClassSearch extends Component {
         this.setState({search: this.props.search.substr(0, 20)})
     }
 
+    getCourseSection(course) {
+        this.props.getSections(course)
+    }
+
     render() {
         let filteredCourses = courses.filter(
             (course) => {
@@ -25,7 +29,7 @@ class ClassSearch extends Component {
             <div>
                 <ul>
                     {filteredCourses.map((course, index) => {
-                        return <li key={index}>{course}</li>
+                        return <li className="course" onClick={() => { this.getCourseSection(course)}} key={index}>{course}</li>
                     })}
                 </ul>
             </div>
