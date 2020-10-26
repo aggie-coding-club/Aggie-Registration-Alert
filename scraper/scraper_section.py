@@ -1,13 +1,14 @@
-import sys
 import time
 import json
 import requests
 import os
+import sys
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 
 import config
+import makedirectories
 
 
 #======================== HOW TO CONSTRUCT 'TERM' ========================#
@@ -50,6 +51,7 @@ def CompassConstructSearch(dept, course, sessionID, term, pageMaxSize=1000):
 
     # Search URL
     url = 'https://{}/StudentRegistrationSsb/ssb/searchResults/searchResults?txt_subject={}&txt_courseNumber={}&txt_term={}&startDatepicker=&endDatepicker=&uniqueSessionId={}&pageOffset=0&pageMaxSize={}&sortColumn=subjectDescription&sortDirection=asc'.format(base_url, dept, course, term, sessionID, pageMaxSize)
+
     return url
 
 def start_session():
@@ -108,14 +110,13 @@ def reset_search(session):
     '''Resets search so a new search request can be made'''
     # reset search
     r = session.post('https://{}/StudentRegistrationSsb/ssb/classSearch/resetDataForm'.format(base_url))
-    # print("Search reset.")
-    # print()
     return r.status_code
 
 def search(session, sessionID, dept, course, term):
     '''Sends search request to and returns the data'''
     resp = session.get(CompassConstructSearch(dept, course, sessionID, term))
     data = resp.json()['data']
+
     return data
 
 def make_course_json(course_data):
@@ -141,33 +142,99 @@ def make_course_json(course_data):
 
     return x
 
+def write_json(department, data):
+    json_data = {}
+    json_data['course'] = []
+    prev = str(data[0]['courseNumber'])
+    for x in data:
+        
+        current = str(x['courseNumber'])
+        if prev != current:
+            with open('courses/' + department + "/" + prev + ".json", 'w+') as outfile:
+                json.dump(json_data['course'], outfile)
+
+            prev = current
+            json_data['course'] = []
+            
+        json_data['course'].append(make_course_json(x))
     
-def get_course_and_section(session, sessionID, department, course, section, term):
+    if (data):
+        return True
+    else:
+        return False
+    
+
+def get_all_courses(session, sessionID, term):
+    '''
+    This function will scrape all course data for all departments/subjects. 
+    This will take longer to execute and should not be ran very often.
+    '''
+    
+    for department in subjects:
+        
+        reset_search(session)
+
+        # Make requests for department data
+        print()
+        print("Getting Data for " + department)
+        data = search(session, sessionID, department, '', '202031')
+        
+        if (write_json(department, data)):
+            print("Data Retrieved for " + department)
+        else:
+            print("No data for " + department)
+    
+    print("All data retrieved.")
+
+def get_department(session, sessionID, department, term):
+    '''
+    This function scrapes the data for one department. This will
+    update all course data for the department entered.
+    '''
+    
     reset_search(session)
 
     # Make requests for department data
-    # print()
-    # print("Getting Data for " + department + course + section)
+    print("Getting Data for " + department)
+    data = search(session, sessionID, department, '', '202031')
+    
+    if (write_json(department, data)):
+        print("Data Retrieved for " + department)
+    else:
+        print("No data for " + department)
+
+def get_course(session, sessionID, department, course, term):
+    '''
+    This function scrapes the data for one course. 
+    This will update data for all sections of one course
+    '''
+    
+    reset_search(session)
+
+    # Make requests for department data
     data = search(session, sessionID, department, course, '202031')
-    # print()
+    result = []
 
-    # binary search for class
-    # print(data)
-    low = 0
-    high = len(data) - 1
-    while low <= high:
-        mid = (low + high) // 2
-        current_section = data[mid]['sequenceNumber']
-        if current_section == section:
-            seats_available = data[mid]['maximumEnrollment'] - data[mid]['enrollment']
-            print(seats_available) # sending this back to NodeJS
-            sys.stdout.flush()
-            break
-        elif current_section < section:
-            low = mid + 1
-        else:
-            high = mid - 1
+    for each_course in data:
+        result.append([each_course['subject'], each_course['courseNumber'], each_course['sequenceNumber'], each_course['courseTitle'], each_course['enrollment'], each_course['maximumEnrollment']])
+        # print(each_course['subject'])
+        # print(each_course['courseNumber'])
+        # print(each_course['sequenceNumber'])
+        # print(each_course['courseTitle'])
+        # print(each_course['enrollment'])
+        # print(each_course['maximumEnrollment'])
+        # print()
+    print(result)
+    
 
+def makeFolders():
+    if (not os.path.isdir(path + "/courses/ACCT")): # checks to see if the directories are already made
+        makedirectories.initFolders() # if directories do not exist, create them
+
+
+
+# The following is an example of how the program could be ran
+# Uncomment the code if you want to test.
 
 # Start session
 session, sessionID = start_session()
@@ -175,8 +242,12 @@ session, sessionID = start_session()
 # Setup term
 term = '202031' # 2020 3 1 where 2020 is year, 3 is fall, 1 is location
 
-# get_course_and_section(session, sessionID, 'CSCE', '221', '504', term)
-# print(str(sys.argv))
-get_course_and_section(session, sessionID, sys.argv[1], sys.argv[2], sys.argv[3], term)
-# print(sys.argv[1], sys.argv[2], sys.argv[3])
-# sys.stdout.flush()
+# Check for folder, make if needed
+# makeFolders()
+
+# THESE ARE 3 FUNCTIONS THAT GET DATA:
+# get_all_courses(session, sessionID, term)               # Example of getting ALL data, this will take about 90 seconds.
+# get_department(session, sessionID, 'ACCT', term)        # Example of getting one department's data, this will be quick.
+# get_course(session, sessionID, 'CSCE', '221', term)     # Example of getting one course's data, this is the fastest
+get_course(session, sessionID, sys.argv[1], sys.argv[2], term)     # Example of getting one course's data, this is the fastest
+

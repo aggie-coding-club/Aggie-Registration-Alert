@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     // change accordingly
     auth: {
-      user: 'xxx@gmail.com',
+      user: 'aggieregalert@gmail.com',
       pass: 'xxx'
     }
 });
@@ -42,31 +42,42 @@ async function run() {
                 text: ''
             }
 
-            const department = "CSCE"
-            const course = "221"
-            const section = "201"
-            // calling the scraper for a class and section
-            // path should be based on where you run file, so we are running from server.js in this case
-            const pythonProcess = spawn('python3', ["scraper/scraper_email.py", department, course, section])
-            pythonProcess.stdout.on('data', (data) => {
-                data = parseInt(data.toString())
-                if (data > 0) {
-                    mailOptions["text"] = data + " seat(s) are available for " + department + " " + course + "-" + section
-                    transporter.sendMail(mailOptions, function(error, info){
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log('Email sent: ' + info.response);
-                        }
-                    })
-                } else {
-                    mailOptions["text"] = "No seats are available for " + department + " " + course + "-" + section
-                }
-            })
+            const courses = docs[idx]['courses']
+
+            for (let course_idx = 0; course_idx < courses.length; course_idx++) {
+                
+                const course_detail = courses[course_idx].split(" ")
+                const department = course_detail[0]
+                const course = course_detail[1]
+                const section = course_detail[2]
+                console.log(idx, department, course, section)
+
+                // calling the scraper for a class and section
+                // path should be based on where you run file, so we are running from server.js in this case
+                const pythonProcess = spawn('python3', ["scraper/scraper_email.py", department, course, section])
+                pythonProcess.stdout.on('data', (data) => {
+                    data = parseInt(data.toString())
+                    console.log("User:", idx, course, "Seat Availibility", data)
+                    if (data > 0) {
+                        mailOptions["text"] = data + " seat(s) available for " + department + " " + course + "-" + section
+                        transporter.sendMail(mailOptions, function(error, info){
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log('Email sent: ' + info.response);
+                            }
+                        })
+                    } else {
+                        mailOptions["text"] = "No seats are available for " + department + " " + course + "-" + section
+                    }
+                })
+                await sleep(1000)
+            }
+            
             // await sleep(15000)
         }
-        // 30 minutes timeout currently
-        await sleep(1800000)
+        // 1 minute timeout currently
+        await sleep(120000)
     }
 }
 
@@ -165,5 +176,63 @@ router.post("/login", (req, res) => {
     });
   });
 });
+
+router.post("/get_section", function(req, res) {
+    const courseInfo = req.body.course.split(" ")
+    const pythonProcess = spawn('python3', ["scraper/scraper_section.py", courseInfo[0], courseInfo[1]])
+    pythonProcess.stdout.on('data', (data) => {
+        data = data.toString()
+        res.send(data)
+    })
+})
+
+// get user info by id
+router.get("/:id", function(req, res) {
+    User.findById(req.params.id, (error, data) => {
+        if (error) return next(error)
+        else return res.json(data)
+    })
+})
+
+// add course by name
+router.route('/add/:id').post(function(req, res) {
+    User.findById(req.params.id, function(err, user) {
+        if (!user)
+            res.status(404).send("data is not found")
+        else {
+            //res.json(user)
+            const currentCourses = user.courses
+            currentCourses.push(req.body.course)
+            user.courses = currentCourses
+            user.save().then(user => {
+                res.json("User updated")
+            })
+            .catch(err => {
+                res.status(400).send("Update not possible " + err)
+            })
+        }
+    })
+})
+
+//remove course by name
+router.route('/remove/:id').post(function(req, res) {
+    User.findById(req.params.id, function(err, user) {
+        if (!user)
+            res.status(404).send("data is not found")
+        else {
+            //res.json(user)
+            const currentCourses = user.courses
+            const idx = currentCourses.indexOf(req.body.course)
+            currentCourses.splice(idx, 1)
+            user.courses = currentCourses
+            user.save().then(user => {
+                res.json("User updated")
+            })
+            .catch(err => {
+                res.status(400).send("Update not possible " + err)
+            })
+        }
+    })
+})
 
 module.exports = router;
