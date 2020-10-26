@@ -1,8 +1,12 @@
 .searchBar {
     background-color: #BBB;
-    height: 400px;
+    height: 50vh;
 }
 
+
+::placeholder {
+    color: black;
+}
 
 #left {
     flex-grow: 1;
