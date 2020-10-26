@@ -152,7 +152,7 @@ def get_course_and_section(session, sessionID, department, course, section, term
     # print()
 
     # binary search for class
-    print(data)
+    # print(data)
     low = 0
     high = len(data) - 1
     while low <= high:

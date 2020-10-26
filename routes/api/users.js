@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
     // change accordingly
     auth: {
       user: 'aggieregalert@gmail.com',
-      pass: 'tamuaggie'
+      pass: 'xxx'
     }
 });
 
@@ -57,7 +57,7 @@ async function run() {
                 const pythonProcess = spawn('python3', ["scraper/scraper_email.py", department, course, section])
                 pythonProcess.stdout.on('data', (data) => {
                     data = parseInt(data.toString())
-                    console.log(data)
+                    console.log("User:", idx, course, "Seat Availibility", data)
                     if (data > 0) {
                         mailOptions["text"] = data + " seat(s) available for " + department + " " + course + "-" + section
                         transporter.sendMail(mailOptions, function(error, info){
@@ -71,12 +71,13 @@ async function run() {
                         mailOptions["text"] = "No seats are available for " + department + " " + course + "-" + section
                     }
                 })
+                await sleep(1000)
             }
             
             // await sleep(15000)
         }
         // 1 minute timeout currently
-        await sleep(60000)
+        await sleep(120000)
     }
 }
 
