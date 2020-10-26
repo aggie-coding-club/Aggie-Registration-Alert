@@ -4,7 +4,11 @@
     overflow: auto;
 }
 
-
+.loginBtn {
+    background-color: #add8ff !important;
+    color: #004480 !important;
+    /*border: 1px solid #004480;*/
+}
 
 ::placeholder {
     color: black;
