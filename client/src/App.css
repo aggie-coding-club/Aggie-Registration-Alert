@@ -6,6 +6,7 @@
 
 .landingMain {
     height: 75vh;
+    padding: 10vh;
 }
 
 .registerBtn {
@@ -18,7 +19,7 @@
     color: #004480 !important;
     width: 140px;
     border-radius: 3px;
-    letter-spacing: 1.5px
+    letter-spacing: 1.5px;
 }
 
 ::placeholder {
@@ -27,7 +28,7 @@
 
 .blurb {
     color: grey;
-    font-size: 2rem;
+    font-size: 1.4rem !important;
 }
 
 #left {

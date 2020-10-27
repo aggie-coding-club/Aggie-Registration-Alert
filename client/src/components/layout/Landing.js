@@ -7,7 +7,7 @@ class Landing extends Component {
             <div className="landingMain container valign-wrapper">
                 <div className="row">
                     <div className="col s12 center-align">
-                        <p className="flow-text grey-text text-darken-1">
+                        <p className="blurb flow-text grey-text text-darken-1">
                             Use Aggie Registration Alert to be notified when filled classes become available!
                         </p>
                         <br />
