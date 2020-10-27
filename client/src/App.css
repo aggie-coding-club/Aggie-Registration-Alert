@@ -4,10 +4,31 @@
     overflow: auto;
 }
 
+.landingMain {
+    height: 75vh;
+    padding: 10vh;
+}
 
+.registerBtn {
+    width: 140px;
+    border-radius: 3px;
+    letter-spacing: 1.5px
+}
+.loginBtn {
+    background-color: #add8ff !important;
+    color: #004480 !important;
+    width: 140px;
+    border-radius: 3px;
+    letter-spacing: 1.5px;
+}
 
 ::placeholder {
     color: black;
+}
+
+.blurb {
+    color: grey;
+    font-size: 1.4rem !important;
 }
 
 #left {
