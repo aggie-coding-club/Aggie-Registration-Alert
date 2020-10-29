@@ -33,7 +33,7 @@
 }
 
 ::placeholder {
-    color: #008BFF;
+    color: grey;
 }
 
 .blurb {
@@ -45,40 +45,13 @@
     flex-grow: 1;
     overflow: auto;
     min-height: 100%;
-  /*
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 15%;
-    overflow-y: scroll; 
-    */
 }
-/*
-#middle {
-    position: absolute;
-    top: 0px;
-    bottom: 0;
-    left: 15%;
-    width: 15%;
-    overflow-y: scroll; 
-}
-
-#right {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    overflow-y: scroll;
-    width: 70%;
-}
-*/
 
 .course {
     font-size: 12pt;
     text-align: center;
-    color: #EEE;
-    background: #500000;
+    color: #d0f1ff;
+    background: #127fa5;
     border-radius: 5px;
     margin: 10px;
     padding: 10px;
@@ -91,7 +64,8 @@
 }
 
 .course:hover {
-    background: #c70000;
+    background: #550000;
+    color: white;
 }
 
 .course:hover .fa-trash{
