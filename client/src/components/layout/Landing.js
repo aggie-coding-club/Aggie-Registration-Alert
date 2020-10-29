@@ -22,7 +22,7 @@ class Landing extends Component {
                         <div className="col s6">
                             <Link
                                 to="/login"
-                                className="loginBtn btn btn-large btn-flat waves-effect white black-text"
+                                className="lightBtn btn btn-large waves-effect waves-light hoverable  accent-3"
                             >
                                 Log In
                             </Link>
