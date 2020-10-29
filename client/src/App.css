@@ -16,13 +16,24 @@
     letter-spacing: 1.5px;
 }
 
-.searchBar, .sectionSelection {
+.logoutBtn {
+    width: 150px;
+    border-radius: 3px;
+    letter-spacing: 1.5px;
+    margin-top: 1rem
+}
+
+.classList, .sectionSelection {
     height: 75vh;
     overflow: auto;
 }
 
+.searchBar {
+    width: 20% !important;
+}
+
 ::placeholder {
-    color: black;
+    color: #008BFF;
 }
 
 .blurb {

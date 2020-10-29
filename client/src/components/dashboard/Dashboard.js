@@ -97,11 +97,11 @@ class Dashboard extends Component {
                value={this.state.search}
                onChange={this.updateSearch.bind(this)}
                placeholder="Search for a Course"
-               style={{width: "20%"}}
+               className="searchBar"
                />
 
         <div className="row flex-section">
-          <div className="searchBar landing-copy col s4 flex-col-scroll" id="left">
+          <div className="classList landing-copy col s4 flex-col-scroll" id="left">
               <ClassSearch getSections={this.getSections} search={this.state.search} />
           </div>
 
@@ -115,14 +115,8 @@ class Dashboard extends Component {
               <b>Hey there,</b> {user.name.split(" ")[0]}
             </h6>
             <button
-              style={{
-                width: "150px",
-                borderRadius: "3px",
-                letterSpacing: "1.5px",
-                marginTop: "1rem"
-              }}
               onClick={this.onLogoutClick}
-              className="lightBtn btn btn-large waves-effect waves-light hoverable  accent-3"
+              className="lightBtn logoutBtn btn btn-large waves-effect waves-light hoverable  accent-3"
             >
               Logout
             </button>
