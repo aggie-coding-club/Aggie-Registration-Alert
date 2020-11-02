@@ -30,6 +30,7 @@
 
 .searchBar {
     width: 20% !important;
+    margin-left: 20px !important;
 }
 
 ::placeholder {
