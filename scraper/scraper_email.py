@@ -1,11 +1,9 @@
-import sys
 import time
 import json
 import requests
-import os
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options
+import random
+import string
+import sys
 
 import config
 
@@ -34,14 +32,17 @@ EXAMPLES:
 """
 
 #============================ GLOBAL VARIABLES ============================#
-
-path = os.path.dirname(os.path.realpath(__file__))
 CHROME_DRIVER = config.VARIABLES['chrome_driver']
 base_url = config.VARIABLES['base_url']
 subjects = config.VARIABLES['subjects']
 
 
 
+
+def generate_session_id():
+    ''' Generates session ID '''
+    session_id = ("".join(random.sample(string.ascii_lowercase, 5)) + str(int(time.time() * 1000)))
+    return session_id
 
 def CompassConstructSearch(dept, course, sessionID, term, pageMaxSize=1000):
     '''Constructs search request url given the inputs.'''
@@ -50,59 +51,35 @@ def CompassConstructSearch(dept, course, sessionID, term, pageMaxSize=1000):
 
     # Search URL
     url = 'https://{}/StudentRegistrationSsb/ssb/searchResults/searchResults?txt_subject={}&txt_courseNumber={}&txt_term={}&startDatepicker=&endDatepicker=&uniqueSessionId={}&pageOffset=0&pageMaxSize={}&sortColumn=subjectDescription&sortDirection=asc'.format(base_url, dept, course, term, sessionID, pageMaxSize)
+
     return url
 
-def start_session():
+def start_session(term):
     '''
     Starts and prepares session for searches.
     This uses selenium to start the session and verify the uniqueSessionID
     that is required for searches. It then switches to a requests session.
     '''
-    # Open Headless Selenium
-    chrome_options = Options()  
-    chrome_options.add_argument("--headless")  
-    s = webdriver.Chrome(options=chrome_options)
 
-    # Load page to initialize session
-    s.get('https://{}/StudentRegistrationSsb/ssb/term/termSelection?mode=search'.format(base_url))
-
-    # Navigating webpage
-    term_area = s.find_element_by_class_name('select2-container')
-    term_area.click()
-
-    text_area = s.find_element_by_id('s2id_autogen1_search')
-    text_area.send_keys("Fall 2020 - College Station")
-    time.sleep(2)
-    text_area.send_keys(Keys.ENTER)
-
-    btn = s.find_element_by_xpath('//*[@id="term-go"]')
-    btn.click()
-
-    # Use javascript in Chrome console to scrape unique session id from session storage
-    javascript = "session_id = window.sessionStorage['xe.unique.session.storage.id']"
-    s.execute_script(javascript)
-
-    # Make unique session id into a cookie
-    javascript = "document.cookie = 'sid=' + session_id"
-    s.execute_script(javascript)
-
-    # Take sessionID cookie and store it in python variable
-    sessionID = s.get_cookie('sid')['value']
-
-    # Transfering selenium session to requests session
     headers = {
     "User-Agent":
         "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36"
     }
 
-    session = requests.session()
-    session.headers.update(headers)
+    s = requests.session()
+    s.headers.update(headers)
 
-    for cookie in s.get_cookies():
-        c = {cookie['name']: cookie['value']}
-        session.cookies.update(c)
+    session_id = generate_session_id()
 
-    return session, sessionID
+    data = {
+        'uniqueSessionId': session_id,
+        'term': term
+    }
+
+    # authenticates session ID
+    data = s.post('https://{}/StudentRegistrationSsb/ssb/term/search?mode=search&dataType=json'.format(base_url), data=data)
+
+    return s, session_id
 
 def reset_search(session):
     '''Resets search so a new search request can be made'''
@@ -146,13 +123,10 @@ def get_course_and_section(session, sessionID, department, course, section, term
     reset_search(session)
 
     # Make requests for department data
-    # print()
     # print("Getting Data for " + department + course + section)
-    data = search(session, sessionID, department, course, '202031')
-    # print()
+    data = search(session, sessionID, department, course, term)
 
     # binary search for class
-    # print(data)
     low = 0
     high = len(data) - 1
     while low <= high:
@@ -169,11 +143,11 @@ def get_course_and_section(session, sessionID, department, course, section, term
             high = mid - 1
 
 
-# Start session
-session, sessionID = start_session()
-
 # Setup term
-term = '202031' # 2020 3 1 where 2020 is year, 3 is fall, 1 is location
+term = '202111' # 2020 3 1 where 2020 is year, 3 is fall, 1 is location
+
+# Start session
+session, sessionID = start_session(term)
 
 # get_course_and_section(session, sessionID, 'CSCE', '221', '504', term)
 # print(str(sys.argv))
