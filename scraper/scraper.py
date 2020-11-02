@@ -36,7 +36,7 @@ EXAMPLES:
 #============================ GLOBAL VARIABLES ============================#
 
 path = os.path.dirname(os.path.realpath(__file__))
-CHROME_DRIVER = config.VARIABLES['chrome_driver']
+# CHROME_DRIVER = config.VARIABLES['chrome_driver']
 base_url = config.VARIABLES['base_url']
 subjects = config.VARIABLES['subjects']
 

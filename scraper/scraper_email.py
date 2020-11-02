@@ -32,7 +32,7 @@ EXAMPLES:
 """
 
 #============================ GLOBAL VARIABLES ============================#
-CHROME_DRIVER = config.VARIABLES['chrome_driver']
+# CHROME_DRIVER = config.VARIABLES['chrome_driver']
 base_url = config.VARIABLES['base_url']
 subjects = config.VARIABLES['subjects']
 
