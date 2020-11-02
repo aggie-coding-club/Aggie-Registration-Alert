@@ -1,7 +1,5 @@
-import os
 
 VARIABLES = {
-    'chrome_driver': os.path.dirname(os.path.realpath(__file__)) + '/chromedriver.exe',
     'base_url': 'compassxe-ssb.tamu.edu', # TAMU Banner Base URL
     'subjects': [ # All Departments offered
             'ACCT', 'AEGD', 'AERO', 'AERS', 'AFST', 'AGCJ', 'AGEC', 'AGLS', 'AGSC', 'AGSM', 'ALEC', 'ALED', 'ANSC', 'ANTH',
