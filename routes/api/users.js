@@ -13,6 +13,7 @@ const validateLoginInput = require("../../validation/login");
 
 // Load User model
 const User = require("../../models/User");
+const { collection } = require("../../models/User");
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -43,21 +44,22 @@ async function run() {
             }
 
             const courses = docs[idx]['courses']
+            let new_courses = docs[idx]['courses']
 
-            for (let course_idx = 0; course_idx < courses.length; course_idx++) {
+            for (let course_idx = courses.length-1; course_idx >= 0; course_idx--) {
                 
                 const course_detail = courses[course_idx].split(" ")
                 const department = course_detail[0]
                 const course = course_detail[1]
                 const section = course_detail[2]
-                console.log(idx, department, course, section)
+                // console.log(idx, department, course, section)
 
                 // calling the scraper for a class and section
                 // path should be based on where you run file, so we are running from server.js in this case
                 const pythonProcess = spawn('python3', ["scraper/scraper_email.py", department, course, section])
                 pythonProcess.stdout.on('data', (data) => {
                     data = parseInt(data.toString())
-                    console.log("User:", idx, course, "Seat Availibility", data)
+                    // console.log("User:", idx, course, "Seat Availibility", data)
                     if (data > 0) {
                         mailOptions["text"] = data + " seat(s) available for " + department + " " + course + "-" + section
                         transporter.sendMail(mailOptions, function(error, info){
@@ -67,13 +69,15 @@ async function run() {
                                 console.log('Email sent: ' + info.response);
                             }
                         })
+                        new_courses.splice(course_idx, 1)
                     } else {
                         mailOptions["text"] = "No seats are available for " + department + " " + course + "-" + section
                     }
                 })
                 await sleep(1000)
             }
-            
+            // console.log(docs[idx]['_id'], courses, new_courses)
+            await User.updateOne({ _id: docs[idx]['_id']}, {$set:{courses: new_courses }})
             // await sleep(15000)
         }
         // 1 minute timeout currently
