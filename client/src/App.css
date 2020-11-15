@@ -30,6 +30,14 @@
 
 .searchBar {
     width: 20% !important;
+    margin-left: 20px !important;
+    margin-top: 15px !important;
+}
+
+.sectionTitle {
+    float: right;
+    padding-right: 66vh;
+    margin-bottom: 20px;
 }
 
 ::placeholder {

@@ -93,26 +93,28 @@ class Dashboard extends Component {
 
     return (
       <div className="container flex-no-shrink">
-        <input type="text"
-               value={this.state.search}
-               onChange={this.updateSearch.bind(this)}
-               placeholder="Search for a Course"
-               className="searchBar"
-               />
-
+          <div>
+            <input type="text"
+                   value={this.state.search}
+                   onChange={this.updateSearch.bind(this)}
+                   placeholder="Search for a Course"
+                   className="searchBar"
+                   />
+              <h4 className='sectionTitle'>Sections</h4>
+          </div>
         <div className="row flex-section">
           <div className="classList landing-copy col s4 flex-col-scroll" id="left">
               <ClassSearch getSections={this.getSections} search={this.state.search} />
           </div>
 
           <div className="sectionSelection landing-copy col s4 center-align flex-col-scroll" id="middle">
-              <h4>Sections</h4>
+
               {this.state.loading ? <h5>Loading...</h5> : <SectionsList addCourse={this.addCourse} sections={this.state.sections}/>}
           </div>
 
           <div className="sectionSelection landing-copy col s4 center-align flex-col-scroll" id="right">
             <h6>
-              <b>Hey there,</b> {user.name.split(" ")[0]}
+              <b>Hey there,</b> {user.name.split(" ")[0]}!
             </h6>
             <button
               onClick={this.onLogoutClick}
