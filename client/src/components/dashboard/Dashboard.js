@@ -49,10 +49,13 @@ class Dashboard extends Component {
         axios.post('/api/users/get_section', courseObject)
             .then((response) => {
                 //console.log(response.data)
-                let sections = response.data.replace(/'/g, '"')
-                let array_sections = JSON.parse("[" + sections + "]")
-                this.setState( {sections: array_sections, loading: false} )
-                console.log(this.state.sections)
+                if (response.data.length === 0)
+                    this.setState( {sections: [], loading: false} )
+                else {
+                    let sections = response.data.replace(/'/g, '"')
+                    let array_sections = JSON.parse("[" + sections + "]")
+                    this.setState( {sections: array_sections, loading: false} )
+                }
             })
             .catch((error) => {
                 console.log(error)
@@ -108,8 +111,9 @@ class Dashboard extends Component {
         </div>
 
         <div className="sectionSelection landing-copy col s4 center-align flex-col-scroll" id="middle">
-
-            {this.state.loading ? <h5>Loading...</h5> : <SectionsList addCourse={this.addCourse} sections={this.state.sections}/>}
+            {this.state.loading ? <h5>Loading...</h5>
+              : this.state.sections.length === 0 ? <h5>No Sections Found</h5>
+              : <SectionsList addCourse={this.addCourse} sections={this.state.sections}/>}
     </div>
 
         <div className="sectionSelection landing-copy col s4 center-align flex-col-scroll" id="right">
