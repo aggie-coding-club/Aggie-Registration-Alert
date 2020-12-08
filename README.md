@@ -1,4 +1,5 @@
 # Aggie-Registration-Alert
 
-    nodemon run server.js
-This will run the backend
+Get notified when filled classes are available on Howdy Portal!
+
+[Live Demo](http://aggieregistrationalert.herokuapp.com/)
